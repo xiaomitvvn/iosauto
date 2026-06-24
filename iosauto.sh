@@ -2,8 +2,8 @@
 
 # =================== THIẾT LẬP BIẾN VÀ HÀM ===================
 
-# Thư mục chứa file APK và ảnh trên iSH (iOS không có /sdcard)
-SOURCE_DIR="$HOME/Zalo_TV_Tools"
+# 📌 ĐÃ SỬA: Ép thư mục nguồn trùng khớp hoàn toàn với vị trí Git Clone
+SOURCE_DIR="$HOME/iosauto"
 ADB_COMMAND="adb"
 
 # Sử dụng dải màu BOLD (Đậm) để giao diện rực rỡ và sắc nét
@@ -20,7 +20,7 @@ NC='\033[0m' # No Color
 print_header() {
     clear
     printf "${CYAN}╔════════════════════════════════════════════════════════╗${NC}\n"
-    printf "${CYAN}║${NC} ${YELLOW}       🚀 CÔNG CỤ CÀI ĐẶT TIVI XIAOMI (BẢN iSH) 🚀      ${NC} ${CYAN}║${NC}\n"
+    printf "${CYAN}║${NC} ${YELLOW}        🚀 CÔNG CỤ CÀI ĐẶT TIVI XIAOMI (BẢN iSH) 🚀      ${NC} ${CYAN}║${NC}\n"
     printf "${CYAN}╚════════════════════════════════════════════════════════╝${NC}\n\n"
 }
 
@@ -69,7 +69,7 @@ install_apk() {
             printf "         ${RED}╰─> ❌ Thất bại!${NC}\n"
         fi
     else
-        printf "    ${RED}[!]${NC} ${YELLOW}Không tìm thấy file: ${WHITE}$apk_file${YELLOW} -> Bỏ qua.${NC}\n"
+        printf "    ${RED}[!]${NC} ${YELLOW}Không tìm thấy file: ${WHITE}$apk_file${YELLOW} -> Bỏ quan tâm.${NC}\n"
     fi
 }
 
@@ -236,28 +236,16 @@ install_projectivy() {
     printf "\n${YELLOW}🚀 BƯỚC 1: CÀI ĐẶT GIAO DIỆN CHÍNH...${NC}\n"
     $ADB_COMMAND uninstall com.spocky.projengmenu >/dev/null 2>&1
     install_apk "p.apk"
-    
-    $ADB_COMMAND shell monkey -p com.spocky.projengmenu -c android.intent.category.LAUNCHER 1 >/dev/null 2>&1
-    $ADB_COMMAND shell am start -n com.spocky.projengmenu/.ui.home.MainActivity >/dev/null 2>&1
-    $ADB_COMMAND shell cmd package set-home-activity com.spocky.projengmenu/.ui.home.MainActivity >/dev/null 2>&1
 
-    printf "\n${YELLOW}🚫 BƯỚC 2: VÔ HIỆU HÓA ỨNG DỤNG RÁC (BLOATWARE)...${NC}\n"
-    packages_to_disable="com.mitv.tvhome com.android.tv.settings com.mitv.gallery com.xiaomi.tweather com.mitv.screensaver com.xiaomi.mitv.shop com.duokan.videodaily com.xiaomi.tv.gallery com.mitv.cloudcontrol com.miui.tv.analytics com.xiaomi.voicecontrol com.xiaomi.mitv.upgrade com.xiaomi.mitv.appstore com.xiaomi.mitv.calendar com.xiaomi.mitv.handbook com.xiaomi.screenrecorder com.sohu.inputmethod.sogou.tv com.xiaomi.mitv.karaoke.service com.xiaomi.mitv.hyper.screensaver"
-    
-    for pkg in $packages_to_disable; do
-        printf "     ${RED}[✖]${NC} Đóng băng: ${WHITE}$pkg${NC}\n"
-        $ADB_COMMAND shell pm disable-user --user 0 "$pkg" >/dev/null 2>&1
-    done
-    printf "     ${GREEN}✅ Dọn dẹp ứng dụng rác hoàn tất.${NC}\n"
-
+    # 🌟 VÁ LỖI CHỐNG CHẶN: ĐẨY LỆNH CÀI APP LÊN TRƯỚC KHI KHÓA GOI HỆ THỐNG CHẠY NGẦM
     apks_to_install="keyboard.apk katniss_2.2.0.apk mi.apk m.apk quantv.apk an.apk youtube.apk oktv.apk getout.apk phim4k.apk"
 
-    printf "\n${YELLOW}🚀 BƯỚC 3: CÀI ĐẶT ỨNG DỤNG CẦN THIẾT...${NC}\n"
+    printf "\n${YELLOW}🚀 BƯỚC 2: CÀI ĐẶT ỨNG DỤNG CẦN THIẾT...${NC}\n"
     for apk in $apks_to_install; do
         install_apk "$apk"
     done
 
-    printf "\n${YELLOW}🖼️ BƯỚC 4: SAO CHÉP DỮ LIỆU & ẢNH NỀN...${NC}\n"
+    printf "\n${YELLOW}🖼️ BƯỚC 3: SAO CHÉP DỮ LIỆU & ẢNH NỀN...${NC}\n"
     $ADB_COMMAND push projectivy.plbackup /sdcard/Download >/dev/null 2>&1
     count=0
     for ext in jpg jpeg png JPG JPEG PNG; do
@@ -271,6 +259,15 @@ install_projectivy() {
         done
     done
     printf "     ${GREEN}✅ Đã chép File cấu hình và Ảnh nền.${NC}\n"
+
+    printf "\n${YELLOW}🚫 BƯỚC 4: VÔ HIỆU HÓA ỨNG DỤNG RÁC (BLOATWARE) SAU KHI CÀI APP...${NC}\n"
+    packages_to_disable="com.mitv.tvhome com.android.tv.settings com.mitv.gallery com.xiaomi.tweather com.mitv.screensaver com.xiaomi.mitv.shop com.duokan.videodaily com.xiaomi.tv.gallery com.mitv.cloudcontrol com.miui.tv.analytics com.xiaomi.voicecontrol com.xiaomi.mitv.upgrade com.xiaomi.mitv.appstore com.xiaomi.mitv.calendar com.xiaomi.mitv.handbook com.xiaomi.screenrecorder com.sohu.inputmethod.sogou.tv com.xiaomi.mitv.karaoke.service com.xiaomi.mitv.hyper.screensaver"
+    
+    for pkg in $packages_to_disable; do
+        printf "     ${RED}[✖]${NC} Đóng băng: ${WHITE}$pkg${NC}\n"
+        $ADB_COMMAND shell pm disable-user --user 0 "$pkg" >/dev/null 2>&1
+    done
+    printf "     ${GREEN}✅ Dọn dẹp ứng dụng rác hoàn tất.${NC}\n"
     
     printf "\n${YELLOW}🔑 BƯỚC 5: CẤP QUYỀN HỆ THỐNG CHO ỨNG DỤNG...${NC}\n"
     pkg="com.spocky.projengmenu"
@@ -307,6 +304,8 @@ install_projectivy() {
     $ADB_COMMAND shell "settings put secure enabled_accessibility_services com.mitv.shareds/com.mitv.shareds.HomeService:com.spocky.projengmenu/com.spocky.projengmenu.services.ProjectivyAccessibilityService:com.spocky.projengmenu/com.spocky.projengmenu.services.VoiceButtonService" >/dev/null 2>&1
     $ADB_COMMAND shell "settings put secure accessibility_enabled 1" >/dev/null 2>&1
     $ADB_COMMAND shell "cmd package set-home-activity com.spocky.projengmenu/.ui.home.MainActivity" >/dev/null 2>&1
+    $ADB_COMMAND shell monkey -p com.spocky.projengmenu -c android.intent.category.LAUNCHER 1 >/dev/null 2>&1
+    $ADB_COMMAND shell am start -n com.spocky.projengmenu/.ui.home.MainActivity >/dev/null 2>&1
 
     printf "\n${YELLOW}🔄 BƯỚC 6: LÀM MỚI GIAO DIỆN & ĐỒNG BỘ Ổ CỨNG...${NC}\n"
     
@@ -352,28 +351,16 @@ install_launcherfire() {
     printf "\n${YELLOW}🚀 BƯỚC 1: CÀI ĐẶT GIAO DIỆN 2026...${NC}\n"
     $ADB_COMMAND uninstall com.spocky.projengmenu >/dev/null 2>&1
     install_apk "p.apk"
-    
-    $ADB_COMMAND shell monkey -p com.spocky.projengmenu -c android.intent.category.LAUNCHER 1 >/dev/null 2>&1
-    $ADB_COMMAND shell am start -n com.spocky.projengmenu/.ui.home.MainActivity >/dev/null 2>&1
-    $ADB_COMMAND shell cmd package set-home-activity com.spocky.projengmenu/.ui.home.MainActivity >/dev/null 2>&1
 
-    printf "\n${YELLOW}🚫 BƯỚC 2: VÔ HIỆU HÓA ỨNG DỤNG RÁC ...${NC}\n"
-    packages_to_disable="com.mitv.tvhome com.android.tv.settings com.mitv.gallery com.xiaomi.tweather com.mitv.screensaver com.xiaomi.mitv.shop com.duokan.videodaily com.xiaomi.tv.gallery com.mitv.cloudcontrol com.miui.tv.analytics com.xiaomi.voicecontrol com.xiaomi.mitv.upgrade com.xiaomi.mitv.appstore com.xiaomi.mitv.calendar com.xiaomi.mitv.handbook com.xiaomi.screenrecorder com.sohu.inputmethod.sogou.tv com.xiaomi.mitv.karaoke.service com.xiaomi.mitv.hyper.screensaver"
-    
-    for pkg in $packages_to_disable; do
-        printf "     ${RED}[✖]${NC} Đóng băng: ${WHITE}$pkg${NC}\n"
-        $ADB_COMMAND shell pm disable-user --user 0 "$pkg" >/dev/null 2>&1
-    done
-    printf "     ${GREEN}✅ Dọn dẹp ứng dụng rác hoàn tất.${NC}\n"
-
+    # 🌟 VÁ LỖI CHO BẢN PRO 2026: CÀI APP TRƯỚC - KHÓA RÁC SAU
     apks_to_install="keyboard.apk katniss_2.2.0.apk mi.apk m.apk quantv.apk an.apk youtube.apk oktv.apk getout.apk phim4k.apk"
 
-    printf "\n${YELLOW}🚀 BƯỚC 3: CÀI ĐẶT ỨNG DỤNG CẦN THIẾT...${NC}\n"
+    printf "\n${YELLOW}🚀 BƯỚC 2: CÀI ĐẶT ỨNG DỤNG CẦN THIẾT...${NC}\n"
     for apk in $apks_to_install; do
         install_apk "$apk"
     done
 
-    printf "\n${YELLOW}🖼️ BƯỚC 4: SAO CHÉP DỮ LIỆU & ẢNH NỀN...${NC}\n"
+    printf "\n${YELLOW}🖼️ BƯỚC 3: SAO CHÉP DỮ LIỆU & ẢNH NỀN...${NC}\n"
     $ADB_COMMAND push projectivy.plbackup /sdcard/Download >/dev/null 2>&1
     count=0
     for ext in jpg jpeg png JPG JPEG PNG; do
@@ -387,7 +374,16 @@ install_launcherfire() {
         done
     done
     printf "     ${GREEN}✅ Đã chép File cấu hình và Ảnh nền.${NC}\n"
+
+    printf "\n${YELLOW}🚫 BƯỚC 4: VÔ HIỆU HÓA ỨNG DỤNG RÁC SAU KHI CÀI XONG APP...${NC}\n"
+    packages_to_disable="com.mitv.tvhome com.android.tv.settings com.mitv.gallery com.xiaomi.tweather com.mitv.screensaver com.xiaomi.mitv.shop com.duokan.videodaily com.xiaomi.tv.gallery com.mitv.cloudcontrol com.miui.tv.analytics com.xiaomi.voicecontrol com.xiaomi.mitv.upgrade com.xiaomi.mitv.appstore com.xiaomi.mitv.calendar com.xiaomi.mitv.handbook com.xiaomi.screenrecorder com.sohu.inputmethod.sogou.tv com.xiaomi.mitv.karaoke.service com.xiaomi.mitv.hyper.screensaver"
     
+    for pkg in $packages_to_disable; do
+        printf "     ${RED}[✖]${NC} Đóng băng: ${WHITE}$pkg${NC}\n"
+        $ADB_COMMAND shell pm disable-user --user 0 "$pkg" >/dev/null 2>&1
+    done
+    printf "     ${GREEN}✅ Dọn dẹp ứng dụng rác hoàn tất.${NC}\n"
+
     printf "\n${YELLOW}🔑 BƯỚC 5: ĐANG CẤP QUYỀN ỨNG DỤNG...${NC}\n"
     pkg="com.spocky.projengmenu"
     
@@ -423,6 +419,8 @@ install_launcherfire() {
     $ADB_COMMAND shell "settings put secure enabled_accessibility_services com.mitv.shareds/com.mitv.shareds.HomeService:com.spocky.projengmenu/com.spocky.projengmenu.services.ProjectivyAccessibilityService:com.spocky.projengmenu/com.spocky.projengmenu.services.VoiceButtonService" >/dev/null 2>&1
     $ADB_COMMAND shell "settings put secure accessibility_enabled 1" >/dev/null 2>&1
     $ADB_COMMAND shell "cmd package set-home-activity com.spocky.projengmenu/.ui.home.MainActivity" >/dev/null 2>&1
+    $ADB_COMMAND shell monkey -p com.spocky.projengmenu -c android.intent.category.LAUNCHER 1 >/dev/null 2>&1
+    $ADB_COMMAND shell am start -n com.spocky.projengmenu/.ui.home.MainActivity >/dev/null 2>&1
 
     printf "\n${YELLOW}🔄 BƯỚC 6: LÀM MỚI GIAO DIỆN & ĐỒNG BỘ Ổ CỨNG...${NC}\n"
     
@@ -434,7 +432,7 @@ install_launcherfire() {
     $ADB_COMMAND shell settings put global install_non_market_apps 1 >/dev/null 2>&1
     sleep 1
     $ADB_COMMAND shell settings list secure >/dev/null 2>&1
-    sleep 1                                                
+    sleep 1                                         
     $ADB_COMMAND shell sync >/dev/null 2>&1
     sleep 2 
     
@@ -515,7 +513,7 @@ reboot_recovery() {
     $ADB_COMMAND shell reboot recovery >/dev/null 2>&1
     $ADB_COMMAND reboot recovery 
 
-    printf "\n   ${GREEN}✅ Đã gửi lệnh reboot recovery${NC}\n\n"
+    printf "\n   ${GREEN}✅ Đã gửi lệnh reboot recovery${NC}\n"
     printf "   ${MAGENTA}⏱️ Đang chờ TV khởi động lại vào recovery...${NC}\n"
     
     for i in 10 9 8 7 6 5 4 3 2 1; do
