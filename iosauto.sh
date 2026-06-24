@@ -2,25 +2,25 @@
 
 # =================== THIẾT LẬP BIẾN VÀ HÀM ===================
 
-# 📌 ĐÃ SỬA: Ép thư mục nguồn trùng khớp hoàn toàn với vị trí Git Clone
+# Thư mục chứa file APK và ảnh trên iSH
 SOURCE_DIR="$HOME/iosauto"
 ADB_COMMAND="adb"
 
-# Sử dụng dải màu BOLD (Đậm) để giao diện rực rỡ và sắc nét
-GREEN='\033[1;32m'
-RED='\033[1;31m'
-YELLOW='\033[1;33m'
-CYAN='\033[1;36m'
-BLUE='\033[1;34m'
-WHITE='\033[1;37m'
-MAGENTA='\033[1;35m'
-NC='\033[0m' # No Color
+# Hệ màu High-Contrast: Đổi từ màu chói sang màu phẳng siêu nét, dễ nhìn trên iOS
+GREEN='\033[0;32m'
+RED='\033[0;31m'
+YELLOW='\033[0;33m'
+CYAN='\033[0;36m'
+BLUE='\033[0;34m'
+WHITE='\033[0;37m'     # Trắng tinh rõ ràng
+MAGENTA='\033[0;35m'
+NC='\033[0m'           # Không màu
 
 # Hàm in tiêu đề cực chất cho các menu
 print_header() {
     clear
     printf "${CYAN}╔════════════════════════════════════════════════════════╗${NC}\n"
-    printf "${CYAN}║${NC} ${YELLOW}        🚀 CÔNG CỤ CÀI ĐẶT TIVI XIAOMI (BẢN iSH) 🚀      ${NC} ${CYAN}║${NC}\n"
+    printf "${CYAN}║${NC} ${GREEN}        🚀 CÔNG CỤ CÀI ĐẶT TIVI XIAOMI (BẢN iSH) 🚀      ${NC} ${CYAN}║${NC}\n"
     printf "${CYAN}╚════════════════════════════════════════════════════════╝${NC}\n\n"
 }
 
@@ -30,14 +30,14 @@ print_header() {
 return_menu() {
     printf "\n${CYAN}────────────────────────────────────────────────────────${NC}\n"
     for i in 3 2 1; do
-        printf "  ${YELLOW}⏳ HOÀN TẤT! Tự động quay lại Menu sau ${WHITE}$i${YELLOW} giây...${NC} \r"
+        printf "  ${CYAN}⏳ HOÀN TẤT! Tự động quay lại Menu sau ${WHITE}$i${CYAN} giây...${NC} \r"
         sleep 1
     done
     printf "                                                          \r"
 }
 
 get_tv_info() {
-    printf "${YELLOW}🔄 Đang lấy thông tin hệ thống Tivi...${NC}\n"
+    printf "${CYAN}🔄 Đang lấy thông tin hệ thống Tivi...${NC}\n"
     MODEL=$($ADB_COMMAND shell getprop ro.product.model 2>/dev/null | tr -d '\r')
     BRAND=$($ADB_COMMAND shell getprop ro.product.brand 2>/dev/null | tr -d '\r')
     PANEL=$($ADB_COMMAND shell getprop ro.boot.mi.panel_size 2>/dev/null | tr -d '\r')
@@ -49,12 +49,12 @@ get_tv_info() {
 
     [ -z "$PANEL" ] && PANEL="?"
 
-    # Đóng khung thông tin Tivi cho ngầu
-    TV_INFO_LINE="${CYAN}┌────────────────── ${YELLOW}THÔNG TIN THIẾT BỊ${CYAN} ──────────────────┐${NC}\n"
-    TV_INFO_LINE="${TV_INFO_LINE}${CYAN}│${NC} 📺 ${WHITE}TIVI    :${NC} ${GREEN}$MODEL${NC} ${YELLOW}(${BRAND})${NC} - ${MAGENTA}${PANEL} Inch${NC}\n"
-    TV_INFO_LINE="${TV_INFO_LINE}${CYAN}│${NC} 🤖 ${WHITE}ANDROID :${NC} ${GREEN}Bản $ANDROID${NC} | Patch: ${YELLOW}$PATCH${NC}\n"
+    # Đóng khung thông tin Tivi sắc nét
+    TV_INFO_LINE="${CYAN}┌────────────────── ${GREEN}THÔNG TIN THIẾT BỊ${CYAN} ──────────────────┐${NC}\n"
+    TV_INFO_LINE="${TV_INFO_LINE}${CYAN}│${NC} 📺 ${WHITE}TIVI    :${NC} ${GREEN}$MODEL${NC} ${CYAN}(${BRAND})${NC} - ${MAGENTA}${PANEL} Inch${NC}\n"
+    TV_INFO_LINE="${TV_INFO_LINE}${CYAN}│${NC} 🤖 ${WHITE}ANDROID :${NC} ${GREEN}Bản $ANDROID${NC} | Patch: ${CYAN}$PATCH${NC}\n"
     TV_INFO_LINE="${TV_INFO_LINE}${CYAN}│${NC} ⚙️  ${WHITE}BUILD   :${NC} ${WHITE}$BUILD_SHOW${NC} ${CYAN}[$DATE]${NC}\n"
-    TV_INFO_LINE="${TV_INFO_LINE}${CYAN}│${NC} 🔢 ${WHITE}SERIAL  :${NC} ${YELLOW}$SERIAL${NC}\n"
+    TV_INFO_LINE="${TV_INFO_LINE}${CYAN}│${NC} 🔢 ${WHITE}SERIAL  :${NC} ${GREEN}$SERIAL${NC}\n"
     TV_INFO_LINE="${TV_INFO_LINE}${CYAN}│${NC} 🌐 ${WHITE}KẾT NỐI :${NC} ${GREEN}[ $DEVICE_IP ]${NC}\n"
     TV_INFO_LINE="${TV_INFO_LINE}${CYAN}└────────────────────────────────────────────────────────┘${NC}\n"
 }
@@ -62,20 +62,19 @@ get_tv_info() {
 install_apk() {
     apk_file=$1
     if [ -f "$apk_file" ]; then
-        printf "    ${CYAN}[+]${NC} Đang cài đặt: ${YELLOW}$apk_file${NC} ...\n"
+        printf "    ${CYAN}[+]${NC} ${WHITE}Đang cài đặt:${NC} ${CYAN}$apk_file${NC} ...\n"
         if $ADB_COMMAND install -r -g "$apk_file" >/dev/null 2>&1; then
             printf "         ${GREEN}╰─> ✅ Thành công!${NC}\n"
         else
             printf "         ${RED}╰─> ❌ Thất bại!${NC}\n"
         fi
     else
-        printf "    ${RED}[!]${NC} ${YELLOW}Không tìm thấy file: ${WHITE}$apk_file${YELLOW} -> Bỏ quan tâm.${NC}\n"
+        printf "    ${RED}[!]${NC} ${WHITE}Không tìm thấy file:${NC} ${CYAN}$apk_file${NC} -> Bỏ qua.\n"
     fi
 }
 
 # =================== BẮT ĐẦU KỊCH BẢN ===================
 
-# 1. KIỂM TRA MÔI TRƯỜNG
 if [ ! -d "$SOURCE_DIR" ]; then
     printf "${RED}❌ Không tìm thấy thư mục nguồn: ${WHITE}$SOURCE_DIR${NC}\n"
     printf "   Hệ thống đang tự động tạo không gian làm việc mới...\n"
@@ -84,9 +83,8 @@ fi
 
 cd "$SOURCE_DIR" || exit
 
-# Tối ưu quét IP cho iOS (Nhập thủ công chuẩn xác)
 scan_ips() {
-    printf "${YELLOW}📡 MÔI TRƯỜNG iOS: Thiết bị chặn tự động quét dải mạng Wi-Fi.${NC}\n"
+    printf "${CYAN}📡 MÔI TRƯỜNG iOS: Thiết bị chặn tự động quét dải mạng Wi-Fi.${NC}\n"
     printf "${WHITE}👉 Vui lòng xem IP trên Tivi hoặc dùng app Fing trên iPhone.${NC}\n\n"
     printf "${GREEN}👉 Nhập chính xác IP Tivi (vd: 192.168.1.100): ${NC}"
     read RAW_IP
@@ -97,10 +95,10 @@ menu1() {
     while true; do
         print_header
         printf "${WHITE}📌 HƯỚNG DẪN KẾT NỐI ADB VỚI TV XIAOMI:${NC}\n"
-        printf "  ${CYAN}[1]${NC} Vào Cài đặt -> Giới thiệu -> Nhấn vào 'Build number' 5-7 lần.\n"
-        printf "  ${CYAN}[2]${NC} Quay lại Cài đặt -> Tùy chọn nhà phát triển.\n"
-        printf "  ${CYAN}[3]${NC} Bật 'ADB Debugging' (Gỡ lỗi ADB).\n"
-        printf "  ${CYAN}[4]${NC} Đảm bảo TV và điện thoại đang kết nối chung một mạng Wi-Fi.\n"
+        printf "  ${CYAN}[1]${NC} ${WHITE}Vào Cài đặt -> Giới thiệu -> Nhấn vào 'Build number' 5-7 lần.${NC}\n"
+        printf "  ${CYAN}[2]${NC} ${WHITE}Quay lại Cài đặt -> Tùy chọn nhà phát triển.${NC}\n"
+        printf "  ${CYAN}[3]${NC} ${WHITE}Bật 'ADB Debugging' (Gỡ lỗi ADB).${NC}\n"
+        printf "  ${CYAN}[4]${NC} ${WHITE}Đảm bảo TV và điện thoại đang kết nối chung một mạng Wi-Fi.${NC}\n"
         printf "${CYAN}────────────────────────────────────────────────────────${NC}\n\n"
 
         RAW_IP=""
@@ -115,11 +113,15 @@ menu1() {
 
         DEVICE_IP="${RAW_IP}:5555"
 
-        printf "\n${YELLOW}🔄 Đang ngắt kết nối cũ (nếu có)...${NC}\n"
+        printf "\n${CYAN}🔄 Đang thiết lập lại cổng mạng và khởi động lại ADB Server...${NC}\n"
+        # 🌟 VÁ LỖI MẤT KẾT NỐI: Ép giải phóng cổng mạng trên iOS hoàn toàn
+        $ADB_COMMAND kill-server >/dev/null 2>&1
+        sleep 1
+        $ADB_COMMAND start-server >/dev/null 2>&1
         $ADB_COMMAND disconnect >/dev/null 2>&1
         sleep 1
 
-        printf "${YELLOW}🔄 Đang kết nối tới ${WHITE}$DEVICE_IP${YELLOW}...${NC}\n"
+        printf "${CYAN}🔄 Đang phát lệnh gõ cửa tới địa chỉ ${WHITE}$DEVICE_IP${CYAN}...${NC}\n"
         connection_output=$($ADB_COMMAND connect "$DEVICE_IP")
         printf "   ${CYAN}>> ${WHITE}$connection_output${NC}\n"
 
@@ -136,7 +138,7 @@ menu1() {
             DEVICE_IP=""
         else
             printf "   ${RED}❌ Kết nối thất bại.${NC}\n"
-            printf "   ${YELLOW}• Kiểm tra lại IP, đảm bảo đã bật ADB Debugging và xác nhận trên TV.${NC}\n"
+            printf "   ${CYAN}• Mẹo nhỏ: Vào TV tắt 'Gỡ lỗi ADB' đi rồi Bật lại để mở lại cổng nhé!${NC}\n"
             sleep 4
         fi
     done
@@ -150,23 +152,23 @@ menu2() {
         print_header
         printf "$TV_INFO_LINE\n\n"
         
-        printf "  ${YELLOW}▶ CÀI ĐẶT HỆ THỐNG TIVI${NC}\n"
-        printf "     ${CYAN}[1]${NC} ${WHITE}Cài Các Dòng TV Cũ dưới 2025${NC}\n"
-        printf "     ${CYAN}[2]${NC} ${WHITE}Cài Các Dòng TV 2026${NC}\n"
-        printf "     ${CYAN}[3]${NC} ${WHITE}Cài App APK cho TV Quốc Tế${NC}\n\n"
+        printf "  ${CYAN}▶ CÀI ĐẶT HỆ THỐNG TIVI${NC}\n"
+        printf "     ${GREEN}[1]${NC} ${WHITE}Cài Các Dòng TV Cũ dưới 2025${NC}\n"
+        printf "     ${GREEN}[2]${NC} ${WHITE}Cài Các Dòng TV 2026${NC}\n"
+        printf "     ${GREEN}[3]${NC} ${WHITE}Cài App APK cho TV Quốc Tế${NC}\n\n"
         
-        printf "  ${YELLOW}▶ TIỆN ÍCH & SAO LƯU DỮ LIỆU${NC}\n"
+        printf "  ${CYAN}▶ TIỆN ÍCH & SAO LƯU DỮ LIỆU${NC}\n"
         printf "     ${BLUE}[4]${NC} ${WHITE}Sao Chép Ảnh Nền Lên TV${NC}\n"
         printf "     ${BLUE}[5]${NC} ${WHITE}Tải File APK & Ảnh Về Máy${NC}\n\n"
         
-        printf "  ${YELLOW}▶ HỆ THỐNG & ĐIỀU KHIỂN${NC}\n"
+        printf "  ${CYAN}▶ HỆ THỐNG & ĐIỀU KHIỂN${NC}\n"
         printf "     ${MAGENTA}[6]${NC} ${WHITE}Khởi Động Lại TV (Reboot)${NC}\n"
         printf "     ${RED}[7]${NC} ${WHITE}Reset Cứng vào Recovery Nội Địa${NC}\n"
         printf "     ${CYAN}[8]${NC} ${WHITE}Ngắt Kết Nối & Đổi TV Khác${NC}\n"
         printf "     ${RED}[0]${NC} ${WHITE}Thoát Công Cụ${NC}\n"
         printf "${CYAN}────────────────────────────────────────────────────────${NC}\n\n"
 
-        printf " 👉 Nhập tùy chọn của bạn [0-8]: "
+        printf " 👉 ${WHITE}Nhập tùy chọn của bạn [0-8]:${NC} "
         read CHOICE
 
         case $CHOICE in
@@ -189,19 +191,18 @@ menu2() {
 download_from_github() {
     print_header
     printf "${CYAN}⬇️ ĐANG KẾT NỐI TỚI KHO CHỨA DỮ LIỆU...${NC}\n"
-    printf "   ${WHITE}Thư mục lưu: ${YELLOW}$SOURCE_DIR${NC}\n"
+    printf "   ${WHITE}Thư mục lưu: ${CYAN}$SOURCE_DIR${NC}\n"
     printf "${CYAN}────────────────────────────────────────────────────────${NC}\n"
 
     BASE_URL="http://tivixiaomi.vn/APPCAITIVI"
     FILES="p.apk keyboard.apk katniss_2.2.0.apk mi.apk tizentube.apk m.apk quantv.apk qlgd.apk an.apk youtube.apk oktv.apk getout.apk phim4k.apk projectivy.plbackup 1.jpg 2.jpg 3.jpg 4.jpg 5.jpg 6.jpg 7.jpg 8.jpg"
 
     set -- $FILES
-    printf "📦 Đang tiến hành tải ${YELLOW}$#${NC} tệp tin...\n\n"
+    printf "📦 Đang tiến hành tải ${CYAN}$#${NC} ${WHITE}tệp tin...${NC}\n\n"
 
     for file in $FILES; do
-        printf "    ${CYAN}[+]${NC} Đang tải ${WHITE}$file${NC}...\n"
+        printf "    ${CYAN}[+]${NC} ${WHITE}Đang tải${NC} ${CYAN}$file${NC}...\n"
         
-        # SỬ DỤNG CURL -# ĐỂ HIỂN THỊ THANH PHẦN TRĂM 100%
         if curl -L -k -# -o "$file" "$BASE_URL/$file"; then
             if grep -q "404: Not Found" "$file"; then
                 printf "         ${RED}╰─> ❌ Không tìm thấy file trên Server!${NC}\n\n"
@@ -221,7 +222,7 @@ download_from_github() {
 
 install_projectivy() {
     printf "\n${CYAN}========================================================${NC}\n"
-    printf "${YELLOW}⚙️ ĐANG THIẾT LẬP THÔNG SỐ HỆ THỐNG TIVI...${NC}\n"
+    printf "${CYAN}⚙️ ĐANG THIẾT LẬP THÔNG SỐ HỆ THỐNG TIVI...${NC}\n"
     $ADB_COMMAND shell service call alarm 3 s16 Asia/Bangkok >/dev/null 2>&1
     $ADB_COMMAND shell settings put global device_locales vi-VN >/dev/null 2>&1
     $ADB_COMMAND shell settings put global sys_locale vi-VN >/dev/null 2>&1
@@ -233,19 +234,18 @@ install_projectivy() {
     $ADB_COMMAND shell settings put global animator_duration_scale 1 >/dev/null 2>&1
     printf "    ${GREEN}✅ Thiết lập thông số cơ bản hoàn tất.${NC}\n"
 
-    printf "\n${YELLOW}🚀 BƯỚC 1: CÀI ĐẶT GIAO DIỆN CHÍNH...${NC}\n"
+    printf "\n${CYAN}🚀 BƯỚC 1: CÀI ĐẶT GIAO DIỆN CHÍNH...${NC}\n"
     $ADB_COMMAND uninstall com.spocky.projengmenu >/dev/null 2>&1
     install_apk "p.apk"
 
-    # 🌟 VÁ LỖI CHỐNG CHẶN: ĐẨY LỆNH CÀI APP LÊN TRƯỚC KHI KHÓA GOI HỆ THỐNG CHẠY NGẦM
     apks_to_install="keyboard.apk katniss_2.2.0.apk mi.apk m.apk quantv.apk an.apk youtube.apk oktv.apk getout.apk phim4k.apk"
 
-    printf "\n${YELLOW}🚀 BƯỚC 2: CÀI ĐẶT ỨNG DỤNG CẦN THIẾT...${NC}\n"
+    printf "\n${CYAN}🚀 BƯỚC 2: CÀI ĐẶT ỨNG DỤNG CẦN THIẾT...${NC}\n"
     for apk in $apks_to_install; do
         install_apk "$apk"
     done
 
-    printf "\n${YELLOW}🖼️ BƯỚC 3: SAO CHÉP DỮ LIỆU & ẢNH NỀN...${NC}\n"
+    printf "\n${CYAN}🖼️ BƯỚC 3: SAO CHÉP DỮ LIỆU & ẢNH NỀN...${NC}\n"
     $ADB_COMMAND push projectivy.plbackup /sdcard/Download >/dev/null 2>&1
     count=0
     for ext in jpg jpeg png JPG JPEG PNG; do
@@ -260,7 +260,7 @@ install_projectivy() {
     done
     printf "     ${GREEN}✅ Đã chép File cấu hình và Ảnh nền.${NC}\n"
 
-    printf "\n${YELLOW}🚫 BƯỚC 4: VÔ HIỆU HÓA ỨNG DỤNG RÁC (BLOATWARE) SAU KHI CÀI APP...${NC}\n"
+    printf "\n${RED}🚫 BƯỚC 4: VÔ HIỆU HÓA ỨNG DỤNG RÁC (BLOATWARE) SAU CÙNG...${NC}\n"
     packages_to_disable="com.mitv.tvhome com.android.tv.settings com.mitv.gallery com.xiaomi.tweather com.mitv.screensaver com.xiaomi.mitv.shop com.duokan.videodaily com.xiaomi.tv.gallery com.mitv.cloudcontrol com.miui.tv.analytics com.xiaomi.voicecontrol com.xiaomi.mitv.upgrade com.xiaomi.mitv.appstore com.xiaomi.mitv.calendar com.xiaomi.mitv.handbook com.xiaomi.screenrecorder com.sohu.inputmethod.sogou.tv com.xiaomi.mitv.karaoke.service com.xiaomi.mitv.hyper.screensaver"
     
     for pkg in $packages_to_disable; do
@@ -269,7 +269,7 @@ install_projectivy() {
     done
     printf "     ${GREEN}✅ Dọn dẹp ứng dụng rác hoàn tất.${NC}\n"
     
-    printf "\n${YELLOW}🔑 BƯỚC 5: CẤP QUYỀN HỆ THỐNG CHO ỨNG DỤNG...${NC}\n"
+    printf "\n${CYAN}🔑 BƯỚC 5: CẤP QUYỀN HỆ THỐNG CHO ỨNG DỤNG...${NC}\n"
     pkg="com.spocky.projengmenu"
     
     appops_perms="REQUEST_INSTALL_PACKAGES WRITE_SETTINGS MANAGE_EXTERNAL_STORAGE"
@@ -277,7 +277,7 @@ install_projectivy() {
 
     for p in 10 25 40 55 70 85 100; do
         printf "     ${CYAN}⏳ Cấp quyền Root cho $pkg | ${WHITE}${p}%%${NC}\r"
-        sleep 1
+        sleep 0.2
     done
     printf "     ${CYAN}⏳ Cấp quyền Root cho $pkg | ${GREEN}100%% ✅${NC}\n"
 
@@ -307,7 +307,7 @@ install_projectivy() {
     $ADB_COMMAND shell monkey -p com.spocky.projengmenu -c android.intent.category.LAUNCHER 1 >/dev/null 2>&1
     $ADB_COMMAND shell am start -n com.spocky.projengmenu/.ui.home.MainActivity >/dev/null 2>&1
 
-    printf "\n${YELLOW}🔄 BƯỚC 6: LÀM MỚI GIAO DIỆN & ĐỒNG BỘ Ổ CỨNG...${NC}\n"
+    printf "\n${CYAN}🔄 BƯỚC 6: LÀM MỚI GIAO DIỆN & ĐỒNG BỘ Ổ CỨNG...${NC}\n"
     
     $ADB_COMMAND shell dumpsys deviceidle whitelist +com.spocky.projengmenu >/dev/null 2>&1
     $ADB_COMMAND shell am force-stop com.spocky.projengmenu >/dev/null 2>&1
@@ -335,7 +335,7 @@ install_projectivy() {
 
 install_launcherfire() {
     printf "\n${CYAN}========================================================${NC}\n"
-    printf "${YELLOW}⚙️ ĐANG THIẾT LẬP THÔNG SỐ CƠ BẢN HỆ THỐNG TIVI...${NC}\n"
+    printf "${CYAN}⚙️ ĐANG THIẾT LẬP THÔNG SỐ CƠ BẢN HỆ THỐNG TIVI...${NC}\n"
     $ADB_COMMAND shell service call alarm 3 s16 Asia/Bangkok >/dev/null 2>&1
     $ADB_COMMAND shell settings put global device_locales vi-VN >/dev/null 2>&1
     $ADB_COMMAND shell settings put global sys_locale vi-VN >/dev/null 2>&1
@@ -348,19 +348,18 @@ install_launcherfire() {
     $ADB_COMMAND shell appops set com.xiaomi.voicecontrol SYSTEM_ALERT_WINDOW deny >/dev/null 2>&1
     printf "    ${GREEN}✅ Thiết lập thông số cơ bản hoàn tất.${NC}\n"
 
-    printf "\n${YELLOW}🚀 BƯỚC 1: CÀI ĐẶT GIAO DIỆN 2026...${NC}\n"
+    printf "\n${CYAN}🚀 BƯỚC 1: CÀI ĐẶT GIAO DIỆN 2026...${NC}\n"
     $ADB_COMMAND uninstall com.spocky.projengmenu >/dev/null 2>&1
     install_apk "p.apk"
 
-    # 🌟 VÁ LỖI CHO BẢN PRO 2026: CÀI APP TRƯỚC - KHÓA RÁC SAU
     apks_to_install="keyboard.apk katniss_2.2.0.apk mi.apk m.apk quantv.apk an.apk youtube.apk oktv.apk getout.apk phim4k.apk"
 
-    printf "\n${YELLOW}🚀 BƯỚC 2: CÀI ĐẶT ỨNG DỤNG CẦN THIẾT...${NC}\n"
+    printf "\n${CYAN}🚀 BƯỚC 2: CÀI ĐẶT ỨNG DỤNG CẦN THIẾT...${NC}\n"
     for apk in $apks_to_install; do
         install_apk "$apk"
     done
 
-    printf "\n${YELLOW}🖼️ BƯỚC 3: SAO CHÉP DỮ LIỆU & ẢNH NỀN...${NC}\n"
+    printf "\n${CYAN}🖼️ BƯỚC 3: SAO CHÉP DỮ LIỆU & ẢNH NỀN...${NC}\n"
     $ADB_COMMAND push projectivy.plbackup /sdcard/Download >/dev/null 2>&1
     count=0
     for ext in jpg jpeg png JPG JPEG PNG; do
@@ -375,7 +374,7 @@ install_launcherfire() {
     done
     printf "     ${GREEN}✅ Đã chép File cấu hình và Ảnh nền.${NC}\n"
 
-    printf "\n${YELLOW}🚫 BƯỚC 4: VÔ HIỆU HÓA ỨNG DỤNG RÁC SAU KHI CÀI XONG APP...${NC}\n"
+    printf "\n${RED}🚫 BƯỚC 4: VÔ HIỆU HÓA ỨNG DỤNG RÁC SAU KHI CÀI XONG APP...${NC}\n"
     packages_to_disable="com.mitv.tvhome com.android.tv.settings com.mitv.gallery com.xiaomi.tweather com.mitv.screensaver com.xiaomi.mitv.shop com.duokan.videodaily com.xiaomi.tv.gallery com.mitv.cloudcontrol com.miui.tv.analytics com.xiaomi.voicecontrol com.xiaomi.mitv.upgrade com.xiaomi.mitv.appstore com.xiaomi.mitv.calendar com.xiaomi.mitv.handbook com.xiaomi.screenrecorder com.sohu.inputmethod.sogou.tv com.xiaomi.mitv.karaoke.service com.xiaomi.mitv.hyper.screensaver"
     
     for pkg in $packages_to_disable; do
@@ -384,7 +383,7 @@ install_launcherfire() {
     done
     printf "     ${GREEN}✅ Dọn dẹp ứng dụng rác hoàn tất.${NC}\n"
 
-    printf "\n${YELLOW}🔑 BƯỚC 5: ĐANG CẤP QUYỀN ỨNG DỤNG...${NC}\n"
+    printf "\n${CYAN}🔑 BƯỚC 5: ĐANG CẤP QUYỀN ỨNG DỤNG...${NC}\n"
     pkg="com.spocky.projengmenu"
     
     appops_perms="REQUEST_INSTALL_PACKAGES WRITE_SETTINGS MANAGE_EXTERNAL_STORAGE"
@@ -392,7 +391,7 @@ install_launcherfire() {
 
     for p in 10 25 40 55 70 85 100; do
         printf "     ${CYAN}⏳ Cấp quyền Root cho $pkg | ${WHITE}${p}%%${NC}\r"
-        sleep 1
+        sleep 0.2
     done
     printf "     ${CYAN}⏳ Cấp quyền Root cho $pkg | ${GREEN}100%% ✅${NC}\n"
 
@@ -422,7 +421,7 @@ install_launcherfire() {
     $ADB_COMMAND shell monkey -p com.spocky.projengmenu -c android.intent.category.LAUNCHER 1 >/dev/null 2>&1
     $ADB_COMMAND shell am start -n com.spocky.projengmenu/.ui.home.MainActivity >/dev/null 2>&1
 
-    printf "\n${YELLOW}🔄 BƯỚC 6: LÀM MỚI GIAO DIỆN & ĐỒNG BỘ Ổ CỨNG...${NC}\n"
+    printf "\n${CYAN}🔄 BƯỚC 6: LÀM MỚI GIAO DIỆN & ĐỒNG BỘ Ổ CỨNG...${NC}\n"
     
     $ADB_COMMAND shell dumpsys deviceidle whitelist +com.spocky.projengmenu >/dev/null 2>&1
     $ADB_COMMAND shell am force-stop com.spocky.projengmenu >/dev/null 2>&1
@@ -434,8 +433,7 @@ install_launcherfire() {
     $ADB_COMMAND shell settings list secure >/dev/null 2>&1
     sleep 1                                         
     $ADB_COMMAND shell sync >/dev/null 2>&1
-    sleep 2 
-    
+    sleep 2
     $ADB_COMMAND shell input keyevent 3 >/dev/null 2>&1
     sleep 1
     
@@ -460,7 +458,7 @@ install_specific_apks() {
             install_apk "$apk"
             installed_count=$((installed_count + 1))
         else
-            printf "    ${RED}[!]${NC} ${YELLOW}Không tìm thấy ${WHITE}$apk${YELLOW} trong thư mục, bỏ qua.${NC}\n"
+            printf "    ${RED}[!]${NC} ${WHITE}Không tìm thấy ${CYAN}$apk${WHITE} trong thư mục, bỏ qua.${NC}\n"
         fi
     done
 
@@ -475,14 +473,14 @@ install_specific_apks() {
 
 copy_wallpapers() {
     print_header
-    printf "${YELLOW}🖼️ BẮT ĐẦU SAO CHÉP ẢNH NỀN (.JPG, .PNG) VÀO TIVI...${NC}\n\n"
+    printf "${CYAN}🖼️ BẮT ĐẦU SAO CHÉP ẢNH NỀN (.JPG, .PNG) VÀO TIVI...${NC}\n\n"
     count=0
     for ext in jpg jpeg png JPG JPEG PNG; do
         for file in *."$ext"; do
             if [ -f "$file" ]; then
                 filename=$(basename "$file")
                 extension="${filename##*.}"
-                printf "    ${CYAN}[+]${NC} Đang chép ${WHITE}$filename${NC}...\n"
+                printf "    ${CYAN}[+]${NC} ${WHITE}Đang chép${NC} ${CYAN}$filename${NC}...\n"
                 $ADB_COMMAND push "$file" "/sdcard/DCIM_${count}.${extension}" >/dev/null 2>&1
                 count=$((count + 1))
             fi
@@ -503,7 +501,7 @@ reboot_recovery() {
     printf "${CYAN}────────────────────────────────────────────────────────${NC}\n"
     printf "   ${BLUE}🔄 ĐANG GỬI LỆNH RESET CỨNG RECOVERY...${NC}\n\n"
 
-    printf "   ${YELLOW}⏳ Đang xử lý"
+    printf "   ${CYAN}⏳ Đang xử lý"
     for i in 1 2 3; do
         printf "."
         sleep 1
@@ -513,7 +511,7 @@ reboot_recovery() {
     $ADB_COMMAND shell reboot recovery >/dev/null 2>&1
     $ADB_COMMAND reboot recovery 
 
-    printf "\n   ${GREEN}✅ Đã gửi lệnh reboot recovery${NC}\n"
+    printf "\n   ${GREEN}✅ Đã gửi lệnh reboot recovery${NC}\n\n"
     printf "   ${MAGENTA}⏱️ Đang chờ TV khởi động lại vào recovery...${NC}\n"
     
     for i in 10 9 8 7 6 5 4 3 2 1; do
@@ -524,7 +522,7 @@ reboot_recovery() {
     printf "\n\n   ${GREEN}🎉 Hoàn tất!${NC}\n"
     printf "   ${CYAN}📡 TV đã ngắt kết nối ADB.${NC}\n"
     
-    printf "\n   ${YELLOW}💡 LƯU Ý QUAN TRỌNG:${NC}\n"
+    printf "\n   ${CYAN}💡 LƯU Ý QUAN TRỌNG:${NC}\n"
     printf "   ${WHITE}Nếu Tivi vẫn không vào Recovery (chỉ khởi động lại bình thường),${NC}\n"
     printf "   ${WHITE}đó là do firmware hãng đã chặn lệnh. Bạn cần làm thủ công:${NC}\n"
     printf "     ${CYAN}1.${NC} Rút phích cắm điện Tivi.\n"
@@ -532,7 +530,7 @@ reboot_recovery() {
     printf "     ${CYAN}3.${NC} Cắm điện lại và tiếp tục giữ 2 nút cho đến khi hiện Recovery.\n\n"
 
     printf "${CYAN}────────────────────────────────────────────────────────${NC}\n"
-    printf "\033[1;33m👉 Đã đọc xong! Nhấn phím [ENTER] để quay lại Menu... \033[0m"
+    printf "\033[1;36m👉 Đã đọc xong! Nhấn phím [ENTER] để quay lại Menu... \033[0m"
     read CONTINUE
 }
 
@@ -542,7 +540,7 @@ reboot_tv() {
     printf "${CYAN}────────────────────────────────────────────────────────${NC}\n"
     
     for i in 3 2 1; do
-        printf "   ${YELLOW}Đếm ngược: Gửi lệnh khởi động sau ${WHITE}$i${YELLOW} giây...${NC} \r"
+        printf "   ${CYAN}Đếm ngược: Gửi lệnh khởi động sau ${WHITE}$i${CYAN} giây...${NC} \r"
         sleep 1
     done
     printf "\n   ${CYAN}>> Đang gửi lệnh hệ thống...${NC}\n"
